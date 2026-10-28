@@ -5,9 +5,13 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$dataDir = Join-Path $env:LOCALAPPDATA 'VibeNotch'
-$appDir = Join-Path $dataDir 'app'
+$dataDir = Join-Path $env:APPDATA 'VibeNotch'
+$appDir = Join-Path $env:LOCALAPPDATA 'Programs\VibeNotch'
 $appExe = Join-Path $appDir 'VibeNotch.exe'
+$legacyDataDirs = @(
+    (Join-Path $env:LOCALAPPDATA 'VibeNotch'),
+    (Join-Path $env:LOCALAPPDATA 'QoderVibeNotch')
+)
 $legacyDataDir = Join-Path $env:LOCALAPPDATA 'QoderVibeNotch'
 $startMenu = [Environment]::GetFolderPath('Programs')
 
@@ -38,20 +42,23 @@ Get-Process QoderVibeNotch.Hook -ErrorAction SilentlyContinue | Stop-Process -Fo
 Start-Sleep -Milliseconds 400
 
 New-Item -ItemType Directory -Force -Path $appDir | Out-Null
+New-Item -ItemType Directory -Force -Path $dataDir | Out-Null
 
-# The project used to be called QoderVibeNotch; carry the config over and drop
-# the old shell integration so only the new install is left behind.
-if (Test-Path $legacyDataDir) {
-    Write-Host 'Migrating data from the old QoderVibeNotch folder...'
+# Data now lives in %APPDATA%\VibeNotch; carry over whatever earlier builds
+# left in %LOCALAPPDATA% and drop the old QoderVibeNotch shell integration.
+foreach ($legacyDir in $legacyDataDirs) {
+    if (-not (Test-Path $legacyDir)) { continue }
     foreach ($name in 'settings.json', 'stats.json') {
-        $from = Join-Path $legacyDataDir $name
+        $from = Join-Path $legacyDir $name
         $to = Join-Path $dataDir $name
         if ((Test-Path $from) -and -not (Test-Path $to)) {
             Copy-Item $from $to
-            Write-Host "  copied $name"
+            Write-Host "  copied $name from $legacyDir"
         }
     }
+}
 
+if (Test-Path $legacyDataDir) {
     Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'QoderVibeNotch' -ErrorAction SilentlyContinue
     Remove-Item 'HKCU:\Software\Classes\qoder-vibe-notch' -Recurse -Force -ErrorAction SilentlyContinue
     $legacyShortcut = Join-Path $startMenu 'Qoder Vibe Notch.lnk'
@@ -96,7 +103,7 @@ Start-Sleep -Milliseconds 600
 
 Write-Host 'Installing Qoder hooks...'
 $proc = Start-Process -FilePath $appExe -ArgumentList '--install-hooks' -Wait -PassThru -WindowStyle Hidden
-if ($proc.ExitCode -ne 0) { throw 'Hook installation failed. Check %LOCALAPPDATA%\VibeNotch\logs\app.log' }
+if ($proc.ExitCode -ne 0) { throw 'Hook installation failed. Check %APPDATA%\VibeNotch\logs\app.log' }
 Write-Host 'Hooks installed into ~/.qoder/settings.json'
 
 if (-not $NoLaunch) {

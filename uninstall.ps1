@@ -3,10 +3,18 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$dataDir = Join-Path $env:LOCALAPPDATA 'VibeNotch'
-$appDir = Join-Path $dataDir 'app'
+$dataDir = Join-Path $env:APPDATA 'VibeNotch'
+$appDir = Join-Path $env:LOCALAPPDATA 'Programs\VibeNotch'
 $appExe = Join-Path $appDir 'VibeNotch.exe'
+$velopackRoot = Join-Path $env:LOCALAPPDATA 'VibeNotch'
 $legacyDataDir = Join-Path $env:LOCALAPPDATA 'QoderVibeNotch'
+
+# Hook removal needs a runnable app; a Velopack install keeps its binary under
+# current\, a source install under Programs\VibeNotch.
+if (-not (Test-Path $appExe)) {
+    $velopackExe = Join-Path $velopackRoot 'current\VibeNotch.exe'
+    if (Test-Path $velopackExe) { $appExe = $velopackExe }
+}
 
 Write-Host 'Removing Qoder hooks...'
 if (Test-Path $appExe) {
@@ -52,6 +60,13 @@ foreach ($protocol in 'HKCU:\Software\Classes\vibe-notch', 'HKCU:\Software\Class
     }
 }
 
+# Source install only; a Velopack install is removed from Windows Settings >
+# Installed apps (or %LOCALAPPDATA%\VibeNotch\Update.exe --uninstall).
+if (Test-Path $appDir) {
+    Remove-Item $appDir -Recurse -Force
+    Write-Host "Removed program files at $appDir."
+}
+
 if ($PurgeData) {
     foreach ($dir in $dataDir, $legacyDataDir) {
         if (Test-Path $dir) {
@@ -60,9 +75,11 @@ if ($PurgeData) {
         }
     }
 } else {
-    Write-Host "Kept data in $dataDir (run with -PurgeData to delete)."
-    if (Test-Path $legacyDataDir) { Write-Host "Old QoderVibeNotch folder left at $legacyDataDir." }
+    Write-Host "Kept settings and logs in $dataDir (run with -PurgeData to delete)."
 }
 
 Write-Host ''
 Write-Host 'Uninstalled.'
+if (Test-Path (Join-Path $velopackRoot 'Update.exe')) {
+    Write-Host 'The Velopack install is still present; remove it from Windows Settings > Apps > Installed apps.'
+}
