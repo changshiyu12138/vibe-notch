@@ -163,7 +163,7 @@ internal static class Program
         try
         {
             var dir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "VibeNotch", "logs");
             Directory.CreateDirectory(dir);
             var file = Path.Combine(dir, "hook.log");

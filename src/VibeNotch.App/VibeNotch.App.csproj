@@ -9,14 +9,25 @@
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>VibeNotch</AssemblyName>
     <RootNamespace>VibeNotch</RootNamespace>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <DebugType>none</DebugType>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
+    <StartupObject>VibeNotch.Program</StartupObject>
     <NoWarn>$(NoWarn);WFAC010</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Sounds\*.wav" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Velopack" Version="1.2.161" />
   </ItemGroup>
 
 </Project>

@@ -15,6 +15,7 @@ public sealed class TrayService : IDisposable
     private readonly WinForms.ToolStripMenuItem _notifyPermissionItem;
     private readonly WinForms.ToolStripMenuItem _positionItem;
     private readonly WinForms.ToolStripMenuItem _soundPickerItem;
+    private readonly WinForms.ToolStripMenuItem _updateItem;
     private readonly List<WinForms.ToolStripMenuItem> _soundItems = new();
     private readonly Drawing.Icon _icon;
 
@@ -86,6 +87,9 @@ public sealed class TrayService : IDisposable
         var testNotify = new WinForms.ToolStripMenuItem("测试通知");
         testNotify.Click += (_, _) => _app.TestNotification();
 
+        _updateItem = new WinForms.ToolStripMenuItem("检查更新");
+        _updateItem.Click += (_, _) => _app.BeginUpdateFlow();
+
         var quit = new WinForms.ToolStripMenuItem("退出");
         quit.Click += (_, _) => _app.ExitApplication();
 
@@ -105,6 +109,7 @@ public sealed class TrayService : IDisposable
             new WinForms.ToolStripSeparator(),
             reinstall,
             remove,
+            _updateItem,
             new WinForms.ToolStripSeparator(),
             quit
         });
@@ -132,6 +137,7 @@ public sealed class TrayService : IDisposable
         _notifyCompleteItem.Checked = _app.Settings.Value.NotifyOnComplete;
         _notifyPermissionItem.Checked = _app.Settings.Value.NotifyOnPermission;
         _positionItem.Text = PositionLabel();
+        _updateItem.Text = _app.Updates.TrayText;
 
         var currentSound = _app.SoundName;
         _soundPickerItem.Text = "提示音音效 · " + SoundService.LabelOf(currentSound);

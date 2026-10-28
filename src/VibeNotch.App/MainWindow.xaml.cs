@@ -33,7 +33,7 @@ public partial class MainWindow : Window
     private const double CompactHeight = 44;
     private const double ExpandedWidth = 446;
     private const double ApprovalWidth = 486;
-    private const double SettingsHeight = 400;
+    private const double SettingsHeight = 430;
 
     private static readonly Brush IdleBrush = FrozenBrush(0x6E, 0x6E, 0x7A);
     private static readonly Brush GreenBrush = FrozenBrush(0x3D, 0xDC, 0x84);
@@ -137,6 +137,11 @@ public partial class MainWindow : Window
     {
         _lastEventAt = DateTime.Now;
         Refresh();
+    }
+
+    public void OnUpdateStateChanged()
+    {
+        UpdateSettings();
     }
 
     public void ApplyPosition()
@@ -373,6 +378,7 @@ public partial class MainWindow : Window
         AboutText.Text = version == null
             ? "Vibe Notch"
             : $"Vibe Notch v{version.ToString(3)} · Windows";
+        UpdateValue.Text = _app.Updates.StatusText;
     }
 
     private static void SetToggle(System.Windows.Shapes.Ellipse dot, TextBlock label, bool on)
@@ -881,6 +887,10 @@ public partial class MainWindow : Window
 
             case "test":
                 _app.TestNotification();
+                break;
+
+            case "update":
+                _app.BeginUpdateFlow();
                 break;
 
             case "quit":

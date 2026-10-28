@@ -18,17 +18,20 @@ public sealed class AppSettings
     public string PermissionOutput { get; set; } = "qoder";
     public List<string> AutoApprove { get; set; } = new();
     public bool HooksInstalled { get; set; }
+    public string? UpdateCheckUtc { get; set; }
 }
 
 public sealed class SettingsStore
 {
+    // Roaming data keeps settings outside the Velopack install root, so they
+    // survive updates and uninstalls.
     public static string DataDir { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "VibeNotch");
 
     public static string SettingsPath => Path.Combine(DataDir, "settings.json");
 
-    private const string LegacyDirName = "QoderVibeNotch";
+    private static readonly string[] LegacyDirNames = { "VibeNotch", "QoderVibeNotch" };
 
     public AppSettings Value { get; private set; } = new();
 
@@ -74,21 +77,25 @@ public sealed class SettingsStore
     {
         try
         {
-            var legacyDir = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                LegacyDirName);
+            if (File.Exists(SettingsPath)) return;
 
-            if (File.Exists(SettingsPath) || !Directory.Exists(legacyDir)) return;
-
-            Directory.CreateDirectory(DataDir);
-            foreach (var name in new[] { "settings.json", "stats.json" })
+            var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            // Oldest first so the newest settings win.
+            foreach (var name in LegacyDirNames)
             {
-                var from = Path.Combine(legacyDir, name);
-                var to = Path.Combine(DataDir, name);
-                if (File.Exists(from) && !File.Exists(to)) File.Copy(from, to);
-            }
+                var legacyDir = Path.Combine(local, name);
+                if (!Directory.Exists(legacyDir)) continue;
 
-            Log.Write("migrated legacy settings from " + legacyDir);
+                Directory.CreateDirectory(DataDir);
+                foreach (var file in new[] { "settings.json", "stats.json" })
+                {
+                    var from = Path.Combine(legacyDir, file);
+                    var to = Path.Combine(DataDir, file);
+                    if (File.Exists(from) && !File.Exists(to)) File.Copy(from, to);
+                }
+
+                Log.Write("migrated legacy data from " + legacyDir);
+            }
         }
         catch (Exception ex)
         {

@@ -482,6 +482,16 @@
                     <TextBlock x:Name="AboutText" Text="Vibe Notch" FontSize="10" Foreground="#59FFFFFF"
                                Margin="13,0,0,0" Height="18" VerticalAlignment="Center" />
 
+                    <Button Style="{StaticResource MenuRow}" Tag="update" Click="SettingsRow_Click"
+                            ToolTip="通过 Velopack 检查并安装新版本">
+                        <Grid>
+                            <TextBlock Text="检查更新" VerticalAlignment="Center" />
+                            <TextBlock x:Name="UpdateValue" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       FontSize="10.5" Foreground="#8CFFFFFF" Text="点击检查"
+                                       MaxWidth="250" TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Button>
+
                     <Button Style="{StaticResource MenuRow}" Tag="quit" Click="SettingsRow_Click">
                         <TextBlock Text="退出 Vibe Notch" Foreground="#FF6666" VerticalAlignment="Center" />
                     </Button>

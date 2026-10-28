@@ -8,6 +8,7 @@ public partial class App : System.Windows.Application
 {
     private Mutex? _mutex;
     private TrayService? _tray;
+    private UpdateService? _updates;
     private bool _balloonShown;
 
     public SettingsStore Settings { get; private set; } = null!;
@@ -16,6 +17,7 @@ public partial class App : System.Windows.Application
     public StatsStore Stats { get; } = StatsStore.Load();
     public MainWindow? Island { get; private set; }
     public TrayService? Tray => _tray;
+    public UpdateService Updates => _updates!;
     public bool IslandVisible => Island?.IsVisible == true;
 
     protected override void OnStartup(StartupEventArgs e)
@@ -69,6 +71,7 @@ public partial class App : System.Windows.Application
         MainWindow = Island;
         Island.Show();
 
+        _updates = new UpdateService(this);
         _tray = new TrayService(this);
         _tray.SyncState();
 
@@ -87,7 +90,11 @@ public partial class App : System.Windows.Application
         }
 
         if (activated) Dispatcher.BeginInvoke(new Action(OnToastActivated));
+
+        Updates.CheckOnStartup();
     }
+
+    public void BeginUpdateFlow() => Updates.BeginUserFlow();
 
     public void OnToastActivated()
     {

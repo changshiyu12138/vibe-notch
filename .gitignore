@@ -5,3 +5,5 @@ obj/
 *.suo
 *.log
 logs/
+artifacts/
+Releases/
