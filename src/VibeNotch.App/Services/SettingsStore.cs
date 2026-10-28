@@ -80,7 +80,7 @@ public sealed class SettingsStore
             if (File.Exists(SettingsPath)) return;
 
             var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            // Oldest first so the newest settings win.
+            // Newest folder first: it provides the settings, older ones only fill gaps.
             foreach (var name in LegacyDirNames)
             {
                 var legacyDir = Path.Combine(local, name);
