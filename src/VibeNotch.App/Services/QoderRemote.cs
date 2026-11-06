@@ -32,6 +32,26 @@ public static class QoderRemote
         return true;
     }
 
+    // The AskUserQuestion card ignores hook decisions (Qoder runs its own ask
+    // without waiting for the synchronous PreToolUse hook), but its keydown
+    // handler maps digit keys to options: "1".."9" select the matching option,
+    // a single-select then submits automatically, a multi-select needs Enter.
+    public static bool SendOptionChoices(IReadOnlyList<int> oneBasedChoices, bool submitAfter)
+    {
+        var hwnd = FindQoderWindow();
+        if (hwnd == IntPtr.Zero) return false;
+
+        foreach (var choice in oneBasedChoices)
+        {
+            if (choice is < 1 or > 9) continue;
+            PostKey(hwnd, (byte)('0' + choice));
+        }
+
+        if (submitAfter) PostKey(hwnd, NativeMethods.VK_RETURN);
+        Log.Write($"remote: option keys posted [{string.Join(",", oneBasedChoices)}]{(submitAfter ? " + enter" : "")}");
+        return true;
+    }
+
     // Screen-following needs the Qoder window rectangle; the same lookup as the
     // key injection so "跟随 Qoder 窗口" lands on the right display.
     public static System.Drawing.Rectangle? FocusBounds()

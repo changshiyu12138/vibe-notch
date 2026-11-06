@@ -39,11 +39,14 @@ public partial class MainWindow : Window
     private static readonly Brush GreenBrush = FrozenBrush(0x3D, 0xDC, 0x84);
     private static readonly Brush AmberBrush = FrozenBrush(0xFF, 0xB0, 0x20);
     private static readonly Brush RedBrush = FrozenBrush(0xFF, 0x5A, 0x5A);
-    private static readonly Brush BadgeTextBrush = FrozenBrush(0xB4, 0xB4, 0xC0);
     private static readonly Brush QuestionBrush = FrozenBrush(0x4D, 0xA3, 0xFF);
     private static readonly Brush PlanBrush = FrozenBrush(0xB0, 0x7C, 0xFF);
-    private static readonly Brush HintTextBrush = FrozenBrush(0x66, 0xFF, 0xFF);
-    private static readonly Brush ReasonTextBrush = FrozenBrush(0xE6, 0xFF, 0xFF);
+
+    // Theme-aware brushes live in window resources (see ApplyTheme) so both the
+    // XAML and the code-behind read the same values.
+    private Brush BadgeTextBrush => (Brush)FindResource("BadgeTextBrushRes");
+    private Brush HintTextBrush => (Brush)FindResource("TextTertiaryBrush");
+    private Brush ReasonTextBrush => (Brush)FindResource("TextBodyBrush");
 
     private const string ReasonPlaceholder = "拒绝理由（可选，会回传给 Qoder）";
 
@@ -83,6 +86,9 @@ public partial class MainWindow : Window
     {
         _app = app;
         InitializeComponent();
+
+        ApplyTheme();
+        Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
         SessionList.ItemsSource = _items;
 
@@ -164,9 +170,117 @@ public partial class MainWindow : Window
             NativeMethods.SWP_NOSIZE | NativeMethods.SWP_NOZORDER | NativeMethods.SWP_NOACTIVATE);
     }
 
-    private WinForms.Screen? TargetScreen()
+    private string _appliedTheme = "";
+
+    // Values are written into window resources; every DynamicReference in the
+    // XAML and the theme-aware brush properties above pick the change up live.
+    public void ApplyTheme()
     {
-        switch (_app.Settings.Value.MonitorMode)
+        var setting = _app.Settings.Value.Theme;
+        var light = setting == "light" || (setting == "system" && SystemAppsUseLightTheme());
+        var theme = light ? "light" : "dark";
+        if (_appliedTheme == theme) return;
+        _appliedTheme = theme;
+        Log.Write("theme: " + theme + (setting == "system" ? " (follow system)" : ""));
+
+        void Set(string key, string hex)
+        {
+            var brush = new SolidColorBrush((Color)System.Windows.Media.ColorConverter.ConvertFromString(hex));
+            Resources[key] = brush;
+        }
+
+        if (light)
+        {
+            Set("IslandBgBrush", "#FFF4F5F7");
+            Set("IslandBorderBrush", "#1F000000");
+            Set("SubtleBgBrush", "#12000000");
+            Set("SubtleBgSoftBrush", "#0D000000");
+            Set("ButtonBgBrush", "#14000000");
+            Set("ButtonBgHoverBrush", "#1F000000");
+            Set("ButtonBorderBrush", "#1F000000");
+            Set("ButtonBorderStrongBrush", "#26000000");
+            Set("BadgeBgBrush", "#0F000000");
+            Set("TextPrimaryBrush", "#F21A1A1E");
+            Set("TextBodyBrush", "#E61A1A1E");
+            Set("TextSoftBrush", "#B33C3C46");
+            Set("TextSecondaryBrush", "#8C3C3C46");
+            Set("TextTertiaryBrush", "#663C3C46");
+            Set("TextFaintBrush", "#593C3C46");
+            Set("TextDimBrush", "#4D3C3C46");
+            Set("CaretBrushRes", "#000000");
+            Set("BadgeTextBrushRes", "#5A5A66");
+        }
+        else
+        {
+            Set("IslandBgBrush", "#FF141519");
+            Set("IslandBorderBrush", "#1FFFFFFF");
+            Set("SubtleBgBrush", "#14FFFFFF");
+            Set("SubtleBgSoftBrush", "#12FFFFFF");
+            Set("ButtonBgBrush", "#1CFFFFFF");
+            Set("ButtonBgHoverBrush", "#24FFFFFF");
+            Set("ButtonBorderBrush", "#26FFFFFF");
+            Set("ButtonBorderStrongBrush", "#33FFFFFF");
+            Set("BadgeBgBrush", "#1FFFFFFF");
+            Set("TextPrimaryBrush", "#F2FFFFFF");
+            Set("TextBodyBrush", "#E6FFFFFF");
+            Set("TextSoftBrush", "#B3FFFFFF");
+            Set("TextSecondaryBrush", "#8CFFFFFF");
+            Set("TextTertiaryBrush", "#66FFFFFF");
+            Set("TextFaintBrush", "#59FFFFFF");
+            Set("TextDimBrush", "#4DFFFFFF");
+            Set("CaretBrushRes", "#FFFFFF");
+            Set("BadgeTextBrushRes", "#B4B4C0");
+        }
+
+        // Code-behind palettes used by the session rows and the diff view.
+        SessionVm.ApplyTheme(light);
+        DiffRow.ApplyTheme(light);
+
+        // Rebind the visible diff rows so they pick the new palette at once.
+        if (_current is { Kind: not PendingKind.Question })
+        {
+            DiffView.ItemsSource = DiffBuilder.Build(_current.ToolName, _current.ToolInput);
+        }
+    }
+
+    public void CycleTheme()
+    {
+        var next = _app.Settings.Value.Theme switch
+        {
+            "dark" => "light",
+            "light" => "system",
+            _ => "dark"
+        };
+        _app.Settings.Value.Theme = next;
+        _app.Settings.Save();
+        ApplyTheme();
+        _app.Tray?.SyncState();
+    }
+
+    private static bool SystemAppsUseLightTheme()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.CurrentUser
+                .OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            return key?.GetValue("AppsUseLightTheme") is int value && value == 1;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void OnUserPreferenceChanged(object? sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
+    {
+        if (_app.Settings.Value.Theme == "system")
+        {
+            Dispatcher.BeginInvoke(new Action(ApplyTheme));
+        }
+    }
+
+    private WinForms.Screen? TargetScreen()
+    {        switch (_app.Settings.Value.MonitorMode)
         {
             case "mouse":
                 return WinForms.Screen.FromPoint(WinForms.Cursor.Position);
@@ -361,6 +475,12 @@ public partial class MainWindow : Window
 
         SetToggle(SoundDot, SoundValue, _app.SoundsEnabled);
         ToneValue.Text = SoundService.LabelOf(settings.SoundName);
+        ThemeValue.Text = settings.Theme switch
+        {
+            "light" => "浅色",
+            "system" => "跟随系统",
+            _ => "深色"
+        };
         SetToggle(NotifyDot, NotifyValue, _app.NotificationsEnabled);
         SetToggle(AutoStartDot, AutoStartValue, settings.AutoStart);
 
@@ -429,7 +549,7 @@ public partial class MainWindow : Window
             {
                 Text = ScreenLabel(screen, i),
                 FontSize = 11,
-                Foreground = check ? GreenBrush : FrozenBrush(0x8C, 0x8C, 0x99),
+                Foreground = check ? GreenBrush : IdleBrush,
                 VerticalAlignment = VerticalAlignment.Center
             };
 
@@ -872,6 +992,10 @@ public partial class MainWindow : Window
                 _app.SelectSound(SoundService.Next(_app.SoundName));
                 break;
 
+            case "theme":
+                CycleTheme();
+                break;
+
             case "notify":
                 _app.SetNotifications(!_app.NotificationsEnabled);
                 break;
@@ -971,8 +1095,37 @@ public partial class MainWindow : Window
         var question = pending.Questions.FirstOrDefault();
         if (question == null) return;
 
+        var answer = string.Join(", ", labels);
+
+        if (pending.SourceEvent == "PreToolUse")
+        {
+            // Qoder dispatches its own question card without waiting for the
+            // synchronous PreToolUse hook and ignores the hook's decision, so
+            // neither "allow" nor "deny" can answer the question. The card does
+            // react to digit keys: 1-9 pick the matching option, a single
+            // select auto-submits, a multi select needs Enter — so forward the
+            // island's choice as keystrokes into the Qoder window.
+            var choices = new List<int>();
+            foreach (var label in labels)
+            {
+                var index = question.Options.ToList().FindIndex(o => o.Label == label);
+                if (index >= 0) choices.Add(index + 1);
+            }
+
+            if (choices.Count > 0)
+            {
+                FlashFooter(QoderRemote.SendOptionChoices(choices, submitAfter: question.MultiSelect)
+                    ? $"已把选项 {string.Join("、", choices)} 发给 Qoder"
+                    : "找不到 Qoder 窗口");
+            }
+
+            // Release the hook; its decision is ignored by Qoder either way.
+            ResolveCurrent("allow");
+            return;
+        }
+
         var updated = CloneInput(pending);
-        updated["answers"] = new JsonObject { [question.Text] = string.Join(", ", labels) };
+        updated["answers"] = new JsonObject { [question.Text] = answer };
         ResolveCurrent("allow", updated);
     }
 

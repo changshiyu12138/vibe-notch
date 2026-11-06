@@ -252,6 +252,7 @@ public sealed class SessionStore
             Display = ToolText.BuildApprovalDisplay(e.ToolName, e.ToolInput),
             ReceivedAt = DateTime.Now,
             Kind = kind,
+            SourceEvent = e.Event,
             Questions = kind == PendingKind.Question ? QuestionParser.Parse(e.ToolInput) : Array.Empty<QuestionVm>(),
             ToolInput = e.ToolInput,
             EditableKey = editableKey,

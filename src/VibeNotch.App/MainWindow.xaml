@@ -11,16 +11,35 @@
         UseLayoutRounding="True" SnapsToDevicePixels="True">
 
     <Window.Resources>
+        <!-- Themeable brushes; runtime values are replaced by ApplyTheme(). -->
+        <SolidColorBrush x:Key="IslandBgBrush" Color="#FF141519" />
+        <SolidColorBrush x:Key="IslandBorderBrush" Color="#1FFFFFFF" />
+        <SolidColorBrush x:Key="SubtleBgBrush" Color="#14FFFFFF" />
+        <SolidColorBrush x:Key="SubtleBgSoftBrush" Color="#12FFFFFF" />
+        <SolidColorBrush x:Key="ButtonBgBrush" Color="#1CFFFFFF" />
+        <SolidColorBrush x:Key="ButtonBgHoverBrush" Color="#24FFFFFF" />
+        <SolidColorBrush x:Key="ButtonBorderBrush" Color="#26FFFFFF" />
+        <SolidColorBrush x:Key="ButtonBorderStrongBrush" Color="#33FFFFFF" />
+        <SolidColorBrush x:Key="BadgeBgBrush" Color="#1FFFFFFF" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F2FFFFFF" />
+        <SolidColorBrush x:Key="TextBodyBrush" Color="#E6FFFFFF" />
+        <SolidColorBrush x:Key="TextSoftBrush" Color="#B3FFFFFF" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#8CFFFFFF" />
+        <SolidColorBrush x:Key="TextTertiaryBrush" Color="#66FFFFFF" />
+        <SolidColorBrush x:Key="TextFaintBrush" Color="#59FFFFFF" />
+        <SolidColorBrush x:Key="TextDimBrush" Color="#4DFFFFFF" />
+        <SolidColorBrush x:Key="CaretBrushRes" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="BadgeTextBrushRes" Color="#B4B4C0" />
         <BooleanToVisibilityConverter x:Key="BoolVis" />
         <Style x:Key="PillButton" TargetType="Button">
-            <Setter Property="Foreground" Value="#F2FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Height" Value="32" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Focusable" Value="False" />
-            <Setter Property="Background" Value="#1CFFFFFF" />
-            <Setter Property="BorderBrush" Value="#26FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource ButtonBgBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -65,7 +84,7 @@
         </Style>
 
         <Style x:Key="MenuRow" TargetType="Button">
-            <Setter Property="Foreground" Value="#E6FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBodyBrush}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Height" Value="30" />
             <Setter Property="Cursor" Value="Hand" />
@@ -79,7 +98,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Body" Property="Background" Value="#14FFFFFF" />
+                                <Setter TargetName="Body" Property="Background" Value="{DynamicResource SubtleBgBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -88,7 +107,7 @@
         </Style>
 
         <Style x:Key="MenuIconButton" TargetType="Button">
-            <Setter Property="Foreground" Value="#8CFFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Width" Value="22" />
             <Setter Property="Height" Value="20" />
@@ -102,8 +121,8 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Body" Property="Background" Value="#1CFFFFFF" />
-                                <Setter Property="Foreground" Value="#F2FFFFFF" />
+                                <Setter TargetName="Body" Property="Background" Value="{DynamicResource ButtonBgBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -112,14 +131,14 @@
         </Style>
 
         <Style x:Key="MiniButton" TargetType="Button">
-            <Setter Property="Foreground" Value="#B3FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSoftBrush}" />
             <Setter Property="FontSize" Value="10" />
             <Setter Property="Height" Value="20" />
             <Setter Property="Padding" Value="9,0" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Focusable" Value="False" />
-            <Setter Property="Background" Value="#14FFFFFF" />
-            <Setter Property="BorderBrush" Value="#1FFFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource SubtleBgBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource IslandBorderBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -147,10 +166,11 @@
                 Width="196" Height="8"
                 HorizontalAlignment="Center" VerticalAlignment="Top"
                 CornerRadius="0,0,20,20"
-                Background="#F5141519"
-                BorderBrush="#1FFFFFFF"
-                BorderThickness="0,0,1,1"
-                ClipToBounds="True">
+                Background="{DynamicResource IslandBgBrush}"
+                BorderBrush="{DynamicResource IslandBorderBrush}"
+                BorderThickness="0,0,1,1">
+            <!-- No ClipToBounds: it clips to the square layout rect, which lets
+                 the drop shadow smear into the two rounded bottom corners. -->
             <Border.Effect>
                 <DropShadowEffect BlurRadius="16" ShadowDepth="3" Direction="270" Opacity="0.45" Color="#000000" />
             </Border.Effect>
@@ -179,19 +199,19 @@
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
                         <TextBlock x:Name="ProjectText" Text="Qoder" FontSize="12" FontWeight="SemiBold"
-                                   Foreground="#F2FFFFFF" TextTrimming="CharacterEllipsis" MaxWidth="140" />
-                        <TextBlock x:Name="ToolText" Text="空闲" FontSize="11" Foreground="#8CFFFFFF"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis" MaxWidth="140" />
+                        <TextBlock x:Name="ToolText" Text="空闲" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextTrimming="CharacterEllipsis" MaxWidth="160" Margin="8,0,0,0" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
-                        <Border x:Name="ContextBadge" Background="#14FFFFFF" CornerRadius="8"
+                        <Border x:Name="ContextBadge" Background="{DynamicResource SubtleBgBrush}" CornerRadius="8"
                                 Padding="6,1" VerticalAlignment="Center" Margin="0,0,4,0" Visibility="Collapsed">
-                            <TextBlock x:Name="ContextValue" Text="ctx 0%" FontSize="10" Foreground="#8CFFFFFF" />
+                            <TextBlock x:Name="ContextValue" Text="ctx 0%" FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}" />
                         </Border>
-                        <Border x:Name="CountBadge" Background="#1FFFFFFF" CornerRadius="8"
+                        <Border x:Name="CountBadge" Background="{DynamicResource BadgeBgBrush}" CornerRadius="8"
                                 Padding="6,1" VerticalAlignment="Center" Visibility="Collapsed">
-                            <TextBlock x:Name="CountText" Text="1" FontSize="10" Foreground="#B3FFFFFF" />
+                            <TextBlock x:Name="CountText" Text="1" FontSize="10" Foreground="{DynamicResource TextSoftBrush}" />
                         </Border>
                         <Button x:Name="MenuButton" Content="☰" Visibility="Collapsed"
                                 Style="{StaticResource MenuIconButton}" Margin="6,0,0,0"
@@ -214,7 +234,7 @@
                                         <Setter Property="Background" Value="Transparent" />
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#14FFFFFF" />
+                                                <Setter Property="Background" Value="{DynamicResource SubtleBgBrush}" />
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -229,13 +249,13 @@
                                     <Ellipse Width="7" Height="7" Fill="{Binding AccentBrush}" VerticalAlignment="Center" />
 
                                     <StackPanel Grid.Column="1" Margin="9,0,8,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding ProjectName}" Foreground="#F2FFFFFF" FontSize="12"
+                                        <TextBlock Text="{Binding ProjectName}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="12"
                                                    FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
-                                        <TextBlock Text="{Binding RowSubtitle}" Foreground="#8CFFFFFF" FontSize="10.5"
+                                        <TextBlock Text="{Binding RowSubtitle}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10.5"
                                                    TextTrimming="CharacterEllipsis" Margin="0,1,0,0" />
                                     </StackPanel>
 
-                                    <TextBlock Grid.Column="2" Text="{Binding TimeAgoText}" Foreground="#5CFFFFFF"
+                                    <TextBlock Grid.Column="2" Text="{Binding TimeAgoText}" Foreground="{DynamicResource TextTertiaryBrush}"
                                                FontSize="10" VerticalAlignment="Center" />
                                 </Grid>
                             </Border>
@@ -257,25 +277,25 @@
                         <Ellipse x:Name="ApprovalDot" Width="8" Height="8" Fill="#FFB020" VerticalAlignment="Center" />
                         <TextBlock x:Name="ApprovalTitle" Grid.Column="1" Text="需要你的授权" Foreground="#FFD48A" FontSize="11"
                                    Margin="8,0,0,0" VerticalAlignment="Center" />
-                        <TextBlock x:Name="ApprovalTool" Grid.Column="2" Text="Bash" Foreground="#F2FFFFFF"
+                        <TextBlock x:Name="ApprovalTool" Grid.Column="2" Text="Bash" Foreground="{DynamicResource TextPrimaryBrush}"
                                    FontFamily="Consolas" FontSize="11.5" VerticalAlignment="Center"
                                    TextTrimming="CharacterEllipsis" MaxWidth="260" />
                     </Grid>
 
                     <StackPanel x:Name="QuestionBox" Visibility="Collapsed" Margin="0,8,0,0">
-                        <TextBlock x:Name="QuestionText" Foreground="#E6FFFFFF" FontSize="11.5"
+                        <TextBlock x:Name="QuestionText" Foreground="{DynamicResource TextBodyBrush}" FontSize="11.5"
                                    TextWrapping="Wrap" LineHeight="16" MaxHeight="48" />
                         <ItemsControl x:Name="QuestionOptions" Margin="0,6,0,0" Focusable="False">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border Margin="0,2" Padding="9,5" CornerRadius="8" Background="#14FFFFFF"
+                                    <Border Margin="0,2" Padding="9,5" CornerRadius="8" Background="{DynamicResource SubtleBgBrush}"
                                             Cursor="Hand" Tag="{Binding Label}" ToolTip="{Binding Description}"
                                             MouseLeftButtonUp="QuestionOption_Click">
                                         <Border.Style>
                                             <Style TargetType="Border">
                                                 <Style.Triggers>
                                                     <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#24FFFFFF" />
+                                                        <Setter Property="Background" Value="{DynamicResource ButtonBgHoverBrush}" />
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -287,19 +307,19 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Text="✓" Foreground="#3DDC84" FontSize="11" Width="14"
                                                        Visibility="{Binding Selected, Converter={StaticResource BoolVis}}" />
-                                            <TextBlock Grid.Column="1" Text="{Binding Label}" Foreground="#F2FFFFFF" FontSize="11.5"
+                                            <TextBlock Grid.Column="1" Text="{Binding Label}" Foreground="{DynamicResource TextPrimaryBrush}" FontSize="11.5"
                                                        TextTrimming="CharacterEllipsis" />
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                        <TextBlock x:Name="QuestionHint" Margin="0,5,0,0" FontSize="10" Foreground="#66FFFFFF"
+                        <TextBlock x:Name="QuestionHint" Margin="0,5,0,0" FontSize="10" Foreground="{DynamicResource TextTertiaryBrush}"
                                    Text="点选项直接作答 · 多选题勾选后点「允许」提交" />
                     </StackPanel>
 
                     <StackPanel x:Name="ApprovalBox">
-                        <Border Background="#12FFFFFF" CornerRadius="9" Padding="10,7" Margin="0,8,0,0"
+                        <Border Background="{DynamicResource SubtleBgSoftBrush}" CornerRadius="9" Padding="10,7" Margin="0,8,0,0"
                                 BorderBrush="#14FFFFFF" BorderThickness="1">
                             <ScrollViewer x:Name="ApprovalScroll" MaxHeight="82"
                                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -317,8 +337,8 @@
 
                         <TextBox x:Name="ApprovalEdit" Visibility="Collapsed" AcceptsReturn="True"
                                  TextWrapping="Wrap" FontFamily="Consolas" FontSize="11"
-                                 Foreground="#F2FFFFFF" Background="#1CFFFFFF" BorderBrush="#33FFFFFF"
-                                 BorderThickness="1" CaretBrush="#FFFFFF" Padding="8,5" Margin="0,8,0,0"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" Background="{DynamicResource ButtonBgBrush}" BorderBrush="{DynamicResource ButtonBorderStrongBrush}"
+                                 BorderThickness="1" CaretBrush="{DynamicResource CaretBrushRes}" Padding="8,5" Margin="0,8,0,0"
                                  Height="96" VerticalScrollBarVisibility="Auto"
                                  PreviewMouseLeftButtonDown="TextBox_PreviewMouseDown"
                                  LostFocus="ApprovalEdit_LostFocus" />
@@ -331,8 +351,8 @@
                         </StackPanel>
 
                         <TextBox x:Name="DenyReason" Margin="0,6,0,0" Height="26" FontSize="11"
-                                 Foreground="#E6FFFFFF" Background="#12FFFFFF" BorderBrush="#1FFFFFFF"
-                                 BorderThickness="1" CaretBrush="#FFFFFF" Padding="8,4"
+                                 Foreground="{DynamicResource TextBodyBrush}" Background="{DynamicResource SubtleBgSoftBrush}" BorderBrush="{DynamicResource IslandBorderBrush}"
+                                 BorderThickness="1" CaretBrush="{DynamicResource CaretBrushRes}" Padding="8,4"
                                  VerticalContentAlignment="Center" GotFocus="DenyReason_GotFocus"
                                  PreviewMouseLeftButtonDown="TextBox_PreviewMouseDown"
                                  LostFocus="DenyReason_LostFocus" />
@@ -346,14 +366,14 @@
                         </Grid.ColumnDefinitions>
 
                         <Button x:Name="DenyButton" Content="拒绝" Style="{StaticResource PillButton}"
-                                Background="#1CFFFFFF" Foreground="#E6FFFFFF" BorderBrush="#26FFFFFF"
+                                Background="{DynamicResource ButtonBgBrush}" Foreground="{DynamicResource TextBodyBrush}" BorderBrush="{DynamicResource ButtonBorderBrush}"
                                 Click="Deny_Click" />
                         <Button x:Name="AllowButton" Grid.Column="2" Content="允许" Style="{StaticResource PillButton}"
                                 Background="#3DDC84" Foreground="#06210F" BorderBrush="#3DDC84"
                                 Click="Allow_Click" />
                     </Grid>
 
-                    <TextBlock x:Name="ApprovalQueue" Margin="0,8,0,0" FontSize="10" Foreground="#66FFFFFF"
+                    <TextBlock x:Name="ApprovalQueue" Margin="0,8,0,0" FontSize="10" Foreground="{DynamicResource TextTertiaryBrush}"
                                Height="14" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
 
@@ -372,7 +392,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock x:Name="FooterHint" FontSize="10" Foreground="#59FFFFFF" VerticalAlignment="Center"
+                    <TextBlock x:Name="FooterHint" FontSize="10" Foreground="{DynamicResource TextFaintBrush}" VerticalAlignment="Center"
                                TextTrimming="CharacterEllipsis"
                                Text="点击会话聚焦 Qoder · 右键托盘更多设置" />
                     <Button x:Name="InterruptButton" Grid.Column="1" Content="中断" Style="{StaticResource MiniButton}"
@@ -380,7 +400,7 @@
                     <Button x:Name="ContinueButton" Grid.Column="3" Content="继续" Style="{StaticResource MiniButton}"
                             Click="Continue_Click" ToolTip="向 Qoder 输入「继续」并回车（不抢焦点）" />
                     <TextBlock x:Name="TodayStats" Grid.Row="1" Grid.ColumnSpan="4" Margin="0,5,0,0"
-                               FontSize="9.5" Foreground="#4DFFFFFF" TextTrimming="CharacterEllipsis"
+                               FontSize="9.5" Foreground="{DynamicResource TextDimBrush}" TextTrimming="CharacterEllipsis"
                                Text="今天还没有活动" />
                 </Grid>
 
@@ -396,14 +416,14 @@
                         </Grid>
                     </Button>
 
-                    <Border Height="1" Background="#14FFFFFF" Margin="4,5" />
+                    <Border Height="1" Background="{DynamicResource SubtleBgBrush}" Margin="4,5" />
 
                     <Button Style="{StaticResource MenuRow}" Tag="position" Click="SettingsRow_Click"
                             ToolTip="点击切换：固定屏幕 / 跟随鼠标 / 跟随 Qoder">
                         <Grid>
                             <TextBlock Text="浮岛位置" VerticalAlignment="Center" />
                             <TextBlock x:Name="PositionValue" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                       FontSize="10.5" Foreground="#8CFFFFFF" Text="固定屏幕" />
+                                       FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="固定屏幕" />
                         </Grid>
                     </Button>
 
@@ -412,7 +432,7 @@
                         <Grid>
                             <TextBlock Text="显示器" VerticalAlignment="Center" />
                             <TextBlock x:Name="ScreenValue" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                       FontSize="10.5" Foreground="#8CFFFFFF" Text="显示器 1"
+                                       FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="显示器 1"
                                        MaxWidth="240" TextTrimming="CharacterEllipsis" />
                         </Grid>
                     </Button>
@@ -424,7 +444,7 @@
                             <TextBlock Text="提示音" VerticalAlignment="Center" />
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Ellipse x:Name="SoundDot" Width="6" Height="6" Fill="#3DDC84" VerticalAlignment="Center" />
-                                <TextBlock x:Name="SoundValue" Text="开" FontSize="10.5" Foreground="#8CFFFFFF" Margin="6,0,0,0" />
+                                <TextBlock x:Name="SoundValue" Text="开" FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Margin="6,0,0,0" />
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -434,7 +454,16 @@
                         <Grid>
                             <TextBlock Text="提示音音效" VerticalAlignment="Center" />
                             <TextBlock x:Name="ToneValue" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                       FontSize="10.5" Foreground="#8CFFFFFF" Text="清铃" />
+                                       FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="清铃" />
+                        </Grid>
+                    </Button>
+
+                    <Button Style="{StaticResource MenuRow}" Tag="theme" Click="SettingsRow_Click"
+                            ToolTip="点击切换：深色 / 浅色 / 跟随系统">
+                        <Grid>
+                            <TextBlock Text="主题" VerticalAlignment="Center" />
+                            <TextBlock x:Name="ThemeValue" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                       FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="深色" />
                         </Grid>
                     </Button>
 
@@ -443,7 +472,7 @@
                             <TextBlock Text="系统通知" VerticalAlignment="Center" />
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Ellipse x:Name="NotifyDot" Width="6" Height="6" Fill="#3DDC84" VerticalAlignment="Center" />
-                                <TextBlock x:Name="NotifyValue" Text="开" FontSize="10.5" Foreground="#8CFFFFFF" Margin="6,0,0,0" />
+                                <TextBlock x:Name="NotifyValue" Text="开" FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Margin="6,0,0,0" />
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -453,7 +482,7 @@
                             <TextBlock Text="开机自启" VerticalAlignment="Center" />
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Ellipse x:Name="AutoStartDot" Width="6" Height="6" Fill="#3DDC84" VerticalAlignment="Center" />
-                                <TextBlock x:Name="AutoStartValue" Text="开" FontSize="10.5" Foreground="#8CFFFFFF" Margin="6,0,0,0" />
+                                <TextBlock x:Name="AutoStartValue" Text="开" FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Margin="6,0,0,0" />
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -464,7 +493,7 @@
                             <TextBlock Text="Hooks" VerticalAlignment="Center" />
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Ellipse x:Name="HooksDot" Width="6" Height="6" Fill="#3DDC84" VerticalAlignment="Center" />
-                                <TextBlock x:Name="HooksValue" Text="已安装" FontSize="10.5" Foreground="#8CFFFFFF" Margin="6,0,0,0" />
+                                <TextBlock x:Name="HooksValue" Text="已安装" FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Margin="6,0,0,0" />
                             </StackPanel>
                         </Grid>
                     </Button>
@@ -473,13 +502,13 @@
                         <Grid>
                             <TextBlock Text="测试通知" VerticalAlignment="Center" />
                             <TextBlock Text="点击发送" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                       FontSize="10.5" Foreground="#5CFFFFFF" />
+                                       FontSize="10.5" Foreground="{DynamicResource TextTertiaryBrush}" />
                         </Grid>
                     </Button>
 
-                    <Border Height="1" Background="#14FFFFFF" Margin="4,5" />
+                    <Border Height="1" Background="{DynamicResource SubtleBgBrush}" Margin="4,5" />
 
-                    <TextBlock x:Name="AboutText" Text="Vibe Notch" FontSize="10" Foreground="#59FFFFFF"
+                    <TextBlock x:Name="AboutText" Text="Vibe Notch" FontSize="10" Foreground="{DynamicResource TextFaintBrush}"
                                Margin="13,0,0,0" Height="18" VerticalAlignment="Center" />
 
                     <Button Style="{StaticResource MenuRow}" Tag="update" Click="SettingsRow_Click"
@@ -487,7 +516,7 @@
                         <Grid>
                             <TextBlock Text="检查更新" VerticalAlignment="Center" />
                             <TextBlock x:Name="UpdateValue" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                       FontSize="10.5" Foreground="#8CFFFFFF" Text="点击检查"
+                                       FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="点击检查"
                                        MaxWidth="250" TextTrimming="CharacterEllipsis" />
                         </Grid>
                     </Button>

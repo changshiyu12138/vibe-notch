@@ -11,6 +11,7 @@ public sealed class AppSettings
     public bool SoundOnComplete { get; set; } = true;
     public bool SoundOnPermission { get; set; } = true;
     public string SoundName { get; set; } = "crystal";
+    public string Theme { get; set; } = "dark"; // dark | light | system
     public bool NotifyOnComplete { get; set; } = true;
     public bool NotifyOnPermission { get; set; } = true;
     public int AutoHideSeconds { get; set; } = 6;

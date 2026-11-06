@@ -31,7 +31,14 @@ public sealed class SessionVm : INotifyPropertyChanged
     private static readonly Brush Green = Frozen(0x3D, 0xDC, 0x84);
     private static readonly Brush Red = Frozen(0xFF, 0x5A, 0x5A);
     private static readonly Brush Violet = Frozen(0xB0, 0x7C, 0xFF);
-    private static readonly Brush Gray = Frozen(0x8C, 0x8C, 0x96);
+    private static Brush Gray = Frozen(0x8C, 0x8C, 0x96);
+
+    // Swapped by MainWindow.ApplyTheme so row colors stay readable on both
+    // the dark and the light island backgrounds.
+    internal static void ApplyTheme(bool light)
+    {
+        Gray = light ? Frozen(0x5E, 0x5E, 0x6A) : Frozen(0x8C, 0x8C, 0x96);
+    }
 
     public string Id { get; init; } = "";
     public string Cwd { get; set; } = "";
@@ -209,6 +216,9 @@ public sealed class PendingPermission
     public string Display { get; init; } = "";
     public DateTime ReceivedAt { get; init; } = DateTime.Now;
     public PendingKind Kind { get; init; } = PendingKind.Approval;
+    // Hook event that created this pending: "PreToolUse" (sync AskUserQuestion
+    // interception) or "PermissionRequest". The answerable channel differs.
+    public string SourceEvent { get; init; } = "";
     public IReadOnlyList<QuestionVm> Questions { get; init; } = Array.Empty<QuestionVm>();
     public JsonNode? ToolInput { get; init; }
     public string? EditableKey { get; init; }
@@ -355,11 +365,22 @@ public enum DiffKind
 
 public sealed class DiffRow
 {
-    private static readonly Brush AddBrush = SessionVm.Frozen(0x3D, 0xDC, 0x84);
-    private static readonly Brush RemoveBrush = SessionVm.Frozen(0xFF, 0x6B, 0x6B);
-    private static readonly Brush FileBrush = SessionVm.Frozen(0x4D, 0xA3, 0xFF);
-    private static readonly Brush CommandBrush = SessionVm.Frozen(0xD9, 0xFF, 0xFF);
-    private static readonly Brush ContextBrush = SessionVm.Frozen(0xA6, 0xFF, 0xFF);
+    private static Brush AddBrush = SessionVm.Frozen(0x3D, 0xDC, 0x84);
+    private static Brush RemoveBrush = SessionVm.Frozen(0xFF, 0x6B, 0x6B);
+    private static Brush FileBrush = SessionVm.Frozen(0x4D, 0xA3, 0xFF);
+    private static Brush CommandBrush = SessionVm.Frozen(0xD9, 0xFF, 0xFF);
+    private static Brush ContextBrush = SessionVm.Frozen(0xA6, 0xFF, 0xFF);
+
+    // The dark-theme palette leans on pale cyan tints that vanish on the light
+    // background, so the light theme swaps in darker slate / saturated tones.
+    internal static void ApplyTheme(bool light)
+    {
+        AddBrush = light ? SessionVm.Frozen(0x1F, 0x9D, 0x55) : SessionVm.Frozen(0x3D, 0xDC, 0x84);
+        RemoveBrush = light ? SessionVm.Frozen(0xD9, 0x3A, 0x3A) : SessionVm.Frozen(0xFF, 0x6B, 0x6B);
+        FileBrush = light ? SessionVm.Frozen(0x2B, 0x6F, 0xD9) : SessionVm.Frozen(0x4D, 0xA3, 0xFF);
+        CommandBrush = light ? SessionVm.Frozen(0x33, 0x3C, 0x46) : SessionVm.Frozen(0xD9, 0xFF, 0xFF);
+        ContextBrush = light ? SessionVm.Frozen(0x3C, 0x3C, 0x46) : SessionVm.Frozen(0xA6, 0xFF, 0xFF);
+    }
 
     public DiffRow(string text, DiffKind kind)
     {

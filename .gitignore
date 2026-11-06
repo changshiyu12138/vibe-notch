@@ -7,3 +7,5 @@ obj/
 logs/
 artifacts/
 Releases/
+publish/
+tmp-qoder/

@@ -15,8 +15,10 @@ public sealed class TrayService : IDisposable
     private readonly WinForms.ToolStripMenuItem _notifyPermissionItem;
     private readonly WinForms.ToolStripMenuItem _positionItem;
     private readonly WinForms.ToolStripMenuItem _soundPickerItem;
+    private readonly WinForms.ToolStripMenuItem _themeItem;
     private readonly WinForms.ToolStripMenuItem _updateItem;
     private readonly List<WinForms.ToolStripMenuItem> _soundItems = new();
+    private readonly List<WinForms.ToolStripMenuItem> _themeItems = new();
     private readonly Drawing.Icon _icon;
 
     public TrayService(App app)
@@ -69,6 +71,21 @@ public sealed class TrayService : IDisposable
             _soundItems.Add(item);
         }
 
+        _themeItem = new WinForms.ToolStripMenuItem("主题");
+        foreach (var (key, label) in new[] { ("dark", "深色"), ("light", "浅色"), ("system", "跟随系统") })
+        {
+            var item = new WinForms.ToolStripMenuItem(label);
+            item.Click += (_, _) =>
+            {
+                _app.Settings.Value.Theme = key;
+                _app.Settings.Save();
+                _app.Island?.ApplyTheme();
+                SyncState();
+            };
+            _themeItem.DropDownItems.Add(item);
+            _themeItems.Add(item);
+        }
+
         _notifyCompleteItem = new WinForms.ToolStripMenuItem("完成通知") { Checked = app.Settings.Value.NotifyOnComplete };        _notifyCompleteItem.Click += (_, _) =>
         {
             _app.Settings.Value.NotifyOnComplete = !_app.Settings.Value.NotifyOnComplete;
@@ -103,6 +120,7 @@ public sealed class TrayService : IDisposable
             _soundCompleteItem,
             _soundPermissionItem,
             _soundPickerItem,
+            _themeItem,
             _notifyCompleteItem,
             _notifyPermissionItem,
             testNotify,
@@ -144,6 +162,19 @@ public sealed class TrayService : IDisposable
         for (var i = 0; i < _soundItems.Count; i++)
         {
             _soundItems[i].Checked = SoundService.Options[i].Key == currentSound;
+        }
+
+        var theme = _app.Settings.Value.Theme;
+        _themeItem.Text = "主题 · " + theme switch
+        {
+            "light" => "浅色",
+            "system" => "跟随系统",
+            _ => "深色"
+        };
+        var themeKeys = new[] { "dark", "light", "system" };
+        for (var i = 0; i < _themeItems.Count; i++)
+        {
+            _themeItems[i].Checked = themeKeys[i] == theme;
         }
     }
 
