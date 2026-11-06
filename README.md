@@ -22,11 +22,12 @@
 - 遥控会话：展开态页脚的「中断」向 Qoder 发送 Esc、「继续」输入「继续」并回车，全程 PostMessage 不抢焦点
 - 点击会话行聚焦 Qoder 窗口（优先匹配项目名，跳过 Desktop Pet 窗口）
 - 完成提示音、授权提示音：内置「清铃 / 水滴 / 琶音」三款合成音效，可在设置或托盘里随时切换并立即试听
+- 主题：深色 / 浅色 / 跟随系统，浮岛设置菜单或托盘菜单里切换，跟随系统时实时响应 Windows 深浅色
 - 完成 / 授权时弹 Windows 系统通知（右下角 Toast，与 Qoder 自带弹窗同款，可分别关闭，点击可聚焦 Qoder）
 - 多屏：固定在某块屏幕，或跟随鼠标 / 跟随 Qoder 窗口自动换屏；设置里可直接选择固定到哪块显示器
 - 自动更新：基于 Velopack，启动后每 6 小时静默检查一次；设置和托盘里的「检查更新」可手动检查，发现新版本后一键下载并重启完成更新
-- 浮岛内设置菜单：悬停后头部右上角出现 ☰，点开内容区换成设置列表（浮岛位置、显示器、提示音开关、提示音音效、系统通知、开机自启、Hooks、测试通知、检查更新、退出）
-- 托盘菜单：隐藏/显示浮岛、打开 Qoder、浮岛位置、提示音音效、开机自启、提示音与通知开关、重装/移除 Hooks、退出
+- 浮岛内设置菜单：悬停后头部右上角出现 ☰，点开内容区换成设置列表（浮岛位置、显示器、提示音开关、提示音音效、主题、系统通知、开机自启、Hooks、测试通知、检查更新、退出）
+- 托盘菜单：隐藏/显示浮岛、打开 Qoder、浮岛位置、提示音音效、主题、开机自启、提示音与通知开关、重装/移除 Hooks、退出
 - 安全回退：浮岛 90 秒未操作会自动交回 Qoder 原生授权弹窗
 
 ## 环境要求
@@ -88,6 +89,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -AutoStart
 | `SoundOnComplete` | `true` | 任务完成提示音 |
 | `SoundOnPermission` | `true` | 授权请求提示音 |
 | `SoundName` | `"crystal"` | 提示音音效：`crystal`（清铃）/ `drop`（水滴）/ `chord`（琶音） |
+| `Theme` | `"dark"` | 主题：`dark` 深色 / `light` 浅色 / `system` 跟随系统（跟随模式下实时响应 Windows 深浅色切换） |
 | `AutoHideSeconds` | `6` | 无活动多少秒后折叠 |
 | `PermissionTimeoutSeconds` | `90` | 浮岛等待授权的超时；超时后交回 Qoder 原生弹窗 |
 | `PermissionOutput` | `"qoder"` | `qoder` 输出 IDE 格式 `hookSpecificOutput.permissionDecision`；`cli` 或 `claude` 输出 CLI 格式 `hookSpecificOutput.decision.behavior` |
