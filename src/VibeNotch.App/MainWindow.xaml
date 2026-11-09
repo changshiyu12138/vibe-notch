@@ -226,8 +226,8 @@
                     </Grid>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
-                        <TextBlock x:Name="ProjectText" Text="Qoder" FontSize="12" FontWeight="SemiBold"
-                                   Foreground="{DynamicResource TextPrimaryBrush}" TextTrimming="CharacterEllipsis" MaxWidth="140" />
+                        <Image x:Name="AppLogo" Source="/Assets/app.ico" Width="16" Height="16"
+                               RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center" />
                         <TextBlock x:Name="ToolText" Text="空闲" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}"
                                    TextTrimming="CharacterEllipsis" MaxWidth="160" Margin="8,0,0,0" />
                     </StackPanel>

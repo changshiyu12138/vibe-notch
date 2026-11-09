@@ -628,7 +628,6 @@ public partial class MainWindow : Window
     {
         if (active != null)
         {
-            ProjectText.Text = active.ProjectName;
             ToolText.Text = active.PhaseText;
             StatusDot.Fill = active.AccentBrush;
             PulseRing.Stroke = active.AccentBrush;
@@ -637,7 +636,6 @@ public partial class MainWindow : Window
         }
         else
         {
-            ProjectText.Text = "Qoder";
             ToolText.Text = "空闲";
             StatusDot.Fill = IdleBrush;
             SetPulse(false);
