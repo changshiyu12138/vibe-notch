@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Vibe Notch 桥接",
+    "description": "把 DSH 的会话、工具、授权与提问事件通过命名管道转发给 Vibe Notch 浮岛。"
+  }
+}

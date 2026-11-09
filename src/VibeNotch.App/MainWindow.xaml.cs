@@ -1028,7 +1028,25 @@ public partial class MainWindow : Window
         if (sender is FrameworkElement { Tag: string id })
         {
             var session = _app.Store.Sessions.FirstOrDefault(s => s.Id == id);
-            QoderFocuser.OpenOrFocus(session?.ProjectName);
+            if (session?.Source == "dsh" && !string.IsNullOrWhiteSpace(session.WebUi))
+            {
+                // DSH sessions live in the harness Web GUI, not a local IDE.
+                try
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(session.WebUi)
+                    {
+                        UseShellExecute = true
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Log.Write("open webui failed: " + ex.Message);
+                }
+            }
+            else
+            {
+                QoderFocuser.OpenOrFocus(session?.ProjectName);
+            }
         }
 
         e.Handled = true;

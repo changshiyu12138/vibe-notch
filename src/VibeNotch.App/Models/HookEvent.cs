@@ -6,6 +6,8 @@ namespace VibeNotch;
 public sealed class HookEvent
 {
     public string Event { get; init; } = "";
+    // Session source: "qoder" (default) or "dsh" (the DeepSeek Harness bridge).
+    public string Source { get; init; } = "qoder";
     public string? SessionId { get; init; }
     public string? Cwd { get; init; }
     public string? TranscriptPath { get; init; }
@@ -18,6 +20,7 @@ public sealed class HookEvent
     public string? LastAssistantMessage { get; init; }
     public string? Error { get; init; }
     public string? RequestId { get; init; }
+    public string? WebUi { get; init; }
 
     public static HookEvent? Parse(string line)
     {
@@ -35,6 +38,7 @@ public sealed class HookEvent
             return new HookEvent
             {
                 Event = Str(root, "event") ?? "",
+                Source = Str(root, "source") ?? "qoder",
                 SessionId = Str(root, "session_id"),
                 Cwd = Str(root, "cwd"),
                 TranscriptPath = Str(root, "transcript_path"),
@@ -46,7 +50,8 @@ public sealed class HookEvent
                 Message = Str(root, "message"),
                 LastAssistantMessage = Str(root, "last_assistant_message"),
                 Error = Str(root, "error"),
-                RequestId = Str(root, "request_id")
+                RequestId = Str(root, "request_id"),
+                WebUi = Str(root, "webui")
             };
         }
         catch

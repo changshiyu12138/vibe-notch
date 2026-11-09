@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Vibe Notch bridge",
+    "description": "Forwards session, tool, approval, and question events to the Vibe Notch island over its named pipe."
+  }
+}

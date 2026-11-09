@@ -21,7 +21,9 @@ public sealed class SessionStore
     {
         if (string.IsNullOrEmpty(e.SessionId)) return;
 
-        if (!_sessions.TryGetValue(e.SessionId, out var session))
+        // Sessions from different sources can share ids; key by source.
+        var key = e.Source + "/" + e.SessionId;
+        if (!_sessions.TryGetValue(key, out var session))
         {
             // Qoder may report a subagent under its own session id; the only
             // parent hint available is "newest active session in the same cwd".
@@ -32,15 +34,21 @@ public sealed class SessionStore
                     .FirstOrDefault()
                 : null;
 
-            session = new SessionVm { Id = e.SessionId, ParentId = parent?.Id ?? "" };
+            session = new SessionVm { Id = key, Source = e.Source, ParentId = parent?.Id ?? "" };
             if (parent != null) parent.Subagents++;
-            _sessions[e.SessionId] = session;
+            _sessions[key] = session;
         }
+
+        if (!string.IsNullOrWhiteSpace(e.WebUi)) session.WebUi = e.WebUi;
 
         if (!string.IsNullOrWhiteSpace(e.Cwd))
         {
             session.Cwd = e.Cwd;
             session.ProjectName = ToolText.ProjectNameFromCwd(e.Cwd);
+        }
+        else if (e.Source == "dsh" && string.IsNullOrWhiteSpace(session.Cwd))
+        {
+            session.ProjectName = "DSH";
         }
 
         if (!string.IsNullOrWhiteSpace(e.TranscriptPath)) session.TranscriptPath = e.TranscriptPath;
@@ -100,6 +108,15 @@ public sealed class SessionStore
                     "ExitPlanMode" => PendingKind.Plan,
                     _ => PendingKind.Approval
                 });
+                break;
+
+            case "AskUserQuestion":
+                // DSH raises its own user-question waterfall; the island answer
+                // travels back through the pipe as updatedInput.answers.
+                session.Phase = SessionPhase.WaitingApproval;
+                session.ToolName = "AskUserQuestion";
+                session.Detail = "";
+                AddPending(session, e, PendingKind.Question);
                 break;
 
             case "PermissionDenied":

@@ -41,6 +41,9 @@ public sealed class SessionVm : INotifyPropertyChanged
     }
 
     public string Id { get; init; } = "";
+    // Session source: "qoder" or "dsh"; the store key prefixes it.
+    public string Source { get; init; } = "qoder";
+    public string? WebUi { get; set; }
     public string Cwd { get; set; } = "";
     public string ProjectName { get; set; } = "Qoder";
     public string TranscriptPath { get; set; } = "";
