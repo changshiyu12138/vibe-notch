@@ -487,7 +487,8 @@
                     </Button>
 
                     <Grid Height="30" Margin="9,0" Background="Transparent">
-                        <TextBlock Text="主题" VerticalAlignment="Center" />
+                        <TextBlock Text="主题" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextBodyBrush}" />
                         <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
                             <Button x:Name="ThemeDark" Style="{StaticResource ThemeChip}" Tag="dark" Content="深色"
                                     ToolTip="深色主题" Click="ThemeChip_Click" />
