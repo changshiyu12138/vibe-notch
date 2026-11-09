@@ -243,20 +243,6 @@ public partial class MainWindow : Window
         }
     }
 
-    public void CycleTheme()
-    {
-        var next = _app.Settings.Value.Theme switch
-        {
-            "dark" => "light",
-            "light" => "system",
-            _ => "dark"
-        };
-        _app.Settings.Value.Theme = next;
-        _app.Settings.Save();
-        ApplyTheme();
-        _app.Tray?.SyncState();
-    }
-
     private static bool SystemAppsUseLightTheme()
     {
         try
@@ -475,12 +461,9 @@ public partial class MainWindow : Window
 
         SetToggle(SoundDot, SoundValue, _app.SoundsEnabled);
         ToneValue.Text = SoundService.LabelOf(settings.SoundName);
-        ThemeValue.Text = settings.Theme switch
-        {
-            "light" => "浅色",
-            "system" => "跟随系统",
-            _ => "深色"
-        };
+        MarkThemeChip(ThemeDark, settings.Theme == "dark");
+        MarkThemeChip(ThemeLight, settings.Theme == "light");
+        MarkThemeChip(ThemeSystem, settings.Theme == "system");
         SetToggle(NotifyDot, NotifyValue, _app.NotificationsEnabled);
         SetToggle(AutoStartDot, AutoStartValue, settings.AutoStart);
 
@@ -505,6 +488,27 @@ public partial class MainWindow : Window
     {
         dot.Fill = on ? GreenBrush : IdleBrush;
         label.Text = on ? "开" : "关";
+    }
+
+    // Selected chip: emphasized text plus an outline; unselected stays quiet.
+    private void MarkThemeChip(WpfButton chip, bool selected)
+    {
+        chip.FontWeight = selected ? FontWeights.SemiBold : FontWeights.Normal;
+        chip.Foreground = selected ? (Brush)FindResource("TextPrimaryBrush") : (Brush)FindResource("TextSecondaryBrush");
+        chip.BorderBrush = selected ? (Brush)FindResource("ButtonBorderStrongBrush") : System.Windows.Media.Brushes.Transparent;
+        chip.Background = selected ? (Brush)FindResource("SubtleBgBrush") : System.Windows.Media.Brushes.Transparent;
+    }
+
+    private void ThemeChip_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: string theme }) return;
+
+        _app.Settings.Value.Theme = theme;
+        _app.Settings.Save();
+        ApplyTheme();
+        _app.Tray?.SyncState();
+        Refresh();
+        e.Handled = true;
     }
 
     private WinForms.Screen? EffectiveFixedScreen()
@@ -990,10 +994,6 @@ public partial class MainWindow : Window
 
             case "tone":
                 _app.SelectSound(SoundService.Next(_app.SoundName));
-                break;
-
-            case "theme":
-                CycleTheme();
                 break;
 
             case "notify":

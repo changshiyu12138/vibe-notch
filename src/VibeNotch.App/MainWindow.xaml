@@ -130,6 +130,34 @@
             </Setter>
         </Style>
 
+        <Style x:Key="ThemeChip" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+            <Setter Property="FontSize" Value="10.5" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="9"
+                                Padding="8,2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource SubtleBgBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="MiniButton" TargetType="Button">
             <Setter Property="Foreground" Value="{DynamicResource TextSoftBrush}" />
             <Setter Property="FontSize" Value="10" />
@@ -458,14 +486,17 @@
                         </Grid>
                     </Button>
 
-                    <Button Style="{StaticResource MenuRow}" Tag="theme" Click="SettingsRow_Click"
-                            ToolTip="点击切换：深色 / 浅色 / 跟随系统">
-                        <Grid>
-                            <TextBlock Text="主题" VerticalAlignment="Center" />
-                            <TextBlock x:Name="ThemeValue" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                       FontSize="10.5" Foreground="{DynamicResource TextSecondaryBrush}" Text="深色" />
-                        </Grid>
-                    </Button>
+                    <Grid Height="30" Margin="9,0" Background="Transparent">
+                        <TextBlock Text="主题" VerticalAlignment="Center" />
+                        <StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+                            <Button x:Name="ThemeDark" Style="{StaticResource ThemeChip}" Tag="dark" Content="深色"
+                                    ToolTip="深色主题" Click="ThemeChip_Click" />
+                            <Button x:Name="ThemeLight" Style="{StaticResource ThemeChip}" Tag="light" Content="浅色"
+                                    ToolTip="浅色主题" Click="ThemeChip_Click" Margin="5,0,0,0" />
+                            <Button x:Name="ThemeSystem" Style="{StaticResource ThemeChip}" Tag="system" Content="跟随系统"
+                                    ToolTip="跟随 Windows 深浅色" Click="ThemeChip_Click" Margin="5,0,0,0" />
+                        </StackPanel>
+                    </Grid>
 
                     <Button Style="{StaticResource MenuRow}" Tag="notify" Click="SettingsRow_Click">
                         <Grid>
